@@ -4,7 +4,7 @@ I'm a computer engineering student building tools I want to use — mostly Windo
 
 **Currently building:** [Codex History](https://github.com/Cemilcanoz/codex-history), a local way to explore coding sessions, token usage and estimated API costs.
 
-[Projects](https://github.com/Cemilcanoz?tab=repositories) · [Latest release](https://github.com/Cemilcanoz/codex-history/releases/latest) · [LinkedIn](https://www.linkedin.com/in/cemil-can-%C3%B6z-3181282a6)
+[Projects](https://github.com/Cemilcanoz?tab=repositories) · [Writing / Medium](https://medium.com/@cemilcanoz15) · [Latest release](https://github.com/Cemilcanoz/codex-history/releases/latest) · [LinkedIn](https://www.linkedin.com/in/cemil-can-%C3%B6z-3181282a6)
 
 ## Featured work
 
@@ -20,6 +20,10 @@ A Windows companion for revisiting Codex sessions. Search your history, inspect 
 |---|---|
 | [Palet](https://github.com/Cemilcanoz/Palet-Fiziksel-Renk-Kar-m-St-dyosu) | An interactive color-mixing playground with live HEX/RGB values. JavaScript. |
 | [Network Architecture Visualizer](https://github.com/Cemilcanoz/network-mimarisi-animasyonu-P2P-vs-Client-Server-Python-tkinter) | Making peer-to-peer and client-server networks easier to understand through animation. Python / Tkinter. |
+
+## Writing
+
+I share what I learn about software, AI and computer networks on [Medium](https://medium.com/@cemilcanoz15), with articles in Turkish and English.
 
 ## What I work with
 
