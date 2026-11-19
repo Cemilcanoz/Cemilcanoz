@@ -1,36 +1,45 @@
-![Cemil Can Öz — Build useful things](assets/profile-header.svg)
+<a href="https://github.com/Cemilcanoz?tab=repositories"><img src="assets/header.svg" alt="Cemil Can Öz — Build useful things." width="100%"></a>
 
-I'm a computer engineering student building tools I want to use — mostly Windows developer tools, interactive web experiments and small applications that make an everyday task easier.
+I'm Cemil, a computer engineering student. I build **local tools for AI-assisted work**: small Windows apps that read the data already on your machine and turn it into something you can use. They run offline and don't need an API key or an account.
 
-**Currently building:** [Codex History](https://github.com/Cemilcanoz/codex-history), a local way to explore coding sessions, token usage and estimated API costs.
+**Now:** fixing bugs upstream in the agent and MCP projects I use every day, and shipping updates to the two apps below.
 
-[Projects](https://github.com/Cemilcanoz?tab=repositories) · [Writing / Medium](https://medium.com/@cemilcanoz15) · [Latest release](https://github.com/Cemilcanoz/codex-history/releases/latest) · [LinkedIn](https://www.linkedin.com/in/cemil-can-%C3%B6z-3181282a6)
+<p>
+  <a href="https://github.com/Cemilcanoz/codex-history"><img src="assets/card-codex-history.svg" alt="Codex History: explore Codex sessions, tokens and estimated API costs locally. C#, .NET, WPF, SQLite." width="49%"></a>
+  <a href="https://github.com/Cemilcanoz/tokenbar"><img src="assets/card-tokenbar.svg" alt="TokenBar: a Windows tray badge for Codex and Claude Code token usage. Reads local logs, no network." width="49%"></a>
+</p>
 
-## Featured work
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://github.com/Cemilcanoz/codex-history"><img src="assets/codex-history.png" alt="Codex History running on Windows with synthetic demo data"></a>
+      <br><sub><a href="https://github.com/Cemilcanoz/codex-history/releases/latest"><b>Download for Windows</b></a> · <a href="https://github.com/Cemilcanoz/codex-history">Source</a> · <a href="https://github.com/Cemilcanoz/codex-history/actions">CI</a></sub>
+    </td>
+    <td width="50%" valign="top" align="center">
+      <a href="https://github.com/Cemilcanoz/tokenbar"><img src="assets/tokenbar-panel.png" alt="TokenBar detail panel with example numbers" width="44%"></a>
+      <br><sub><a href="https://github.com/Cemilcanoz/tokenbar">Source &amp; docs</a> · Codex CLI + Claude Code · numbers are examples</sub>
+    </td>
+  </tr>
+</table>
 
-### [Codex History](https://github.com/Cemilcanoz/codex-history)
+### Open source, in review
 
-A Windows companion for revisiting Codex sessions. Search your history, inspect usage and keep the index on your machine. Built with **C# / .NET, WPF and SQLite**.
-
-[![Codex History — real app, synthetic demo data](assets/codex-history.png)](https://github.com/Cemilcanoz/codex-history)
-
-[Download for Windows](https://github.com/Cemilcanoz/codex-history/releases/latest) · [Source & documentation](https://github.com/Cemilcanoz/codex-history) · [Build & tests](https://github.com/Cemilcanoz/codex-history/actions)
-
-| Project | What I explored |
+| Project | Pull request |
 |---|---|
-| [Palet](https://github.com/Cemilcanoz/Palet-Fiziksel-Renk-Kar-m-St-dyosu) | An interactive color-mixing playground with live HEX/RGB values. JavaScript. |
-| [Network Architecture Visualizer](https://github.com/Cemilcanoz/network-mimarisi-animasyonu-P2P-vs-Client-Server-Python-tkinter) | Making peer-to-peer and client-server networks easier to understand through animation. Python / Tkinter. |
+| [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) | [Exclude pinned skills from curator review](https://github.com/NousResearch/hermes-agent/pull/146141) · [null model names in TUI picker](https://github.com/NousResearch/hermes-agent/pull/146560) · [null cron history](https://github.com/NousResearch/hermes-agent/pull/146554) · [quiet email lease notices](https://github.com/NousResearch/hermes-agent/pull/146520) · [kanban diagnostics task id](https://github.com/NousResearch/hermes-agent/pull/157111) |
+| [BerriAI/litellm](https://github.com/BerriAI/litellm) | [Session tokens in MCP OAuth exchange](https://github.com/BerriAI/litellm/pull/51042) · [Persist cleared OAuth2 scopes](https://github.com/BerriAI/litellm/pull/52018) |
+| [openai/openai-cookbook](https://github.com/openai/openai-cookbook) | [Turkish document retrieval eval](https://github.com/openai/openai-cookbook/pull/3144) · [UTF-8 request files](https://github.com/openai/openai-cookbook/pull/3173) |
 
-## Writing
+### Smaller experiments
 
-I share what I learn about software, AI and computer networks on [Medium](https://medium.com/@cemilcanoz15), with articles in Turkish and English.
+- **[t](https://github.com/Cemilcanoz/t)**: select any part of the screen and translate it. Windows OCR, PySide6, no API key.
+- **[hafiza-duvar-kagidi](https://github.com/Cemilcanoz/hafiza-duvar-kagidi)**: an Obsidian link graph as a live Windows wallpaper (WebView2).
+- **[uzay-benchmark](https://github.com/Cemilcanoz/uzay-benchmark)**: five models build the same 3D N-body simulation, compared side by side.
+- **[Palet](https://github.com/Cemilcanoz/Palet-Fiziksel-Renk-Kar-m-St-dyosu)**: mixing colors as solids, liquids and gas, with live HEX/RGB values.
 
-## What I work with
+**Stack:** C# · .NET · WPF · SQLite · Python · JavaScript, and some Kotlin / Jetpack Compose.
+**Writing:** notes on software, AI and networks on [Medium](https://medium.com/@cemilcanoz15) (TR / EN) · [LinkedIn](https://www.linkedin.com/in/cemil-can-%C3%B6z-3181282a6)
 
-**C# · .NET · WPF · SQLite · Python · JavaScript**
+<img src="assets/footer.svg" alt="Thanks for reading" width="100%">
 
-Also exploring Kotlin / Jetpack Compose and applied machine learning through smaller projects. I like local tools, interfaces that explain their data, and experiments I can test and improve.
-
----
-
-Türkçe / English · Feel free to explore a project, open an issue or suggest an improvement.
+<sub>Header and cards are generated by <a href="scripts/build_svgs.py"><code>scripts/build_svgs.py</code></a> from a hand-drawn stroke alphabet. They use no web fonts.</sub>
