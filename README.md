@@ -22,6 +22,8 @@ I'm Cemil, a computer engineering student. I build **local tools for AI-assisted
   </tr>
 </table>
 
+<img src="assets/live.svg" alt="Live GitHub stats, refreshed daily: pull requests in review and merged, public repositories, latest Codex History release and weekly contributions." width="100%">
+
 ### Open source, in review
 
 | Project | Pull request |

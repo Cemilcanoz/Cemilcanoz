@@ -307,66 +307,162 @@ def frame(w, h, inset=14, sw=1.2) -> str:
 # --------------------------------------------------------------------------
 # Header
 # --------------------------------------------------------------------------
+ANIM_CSS = (
+    "<style>"
+    ".w{stroke-dasharray:1 1;stroke-dashoffset:1;animation:draw 2.4s cubic-bezier(.65,0,.25,1) forwards}"
+    ".w2{animation-delay:.7s}.w3{animation-delay:1.4s}"
+    "@keyframes draw{to{stroke-dashoffset:0}}"
+    ".fade{opacity:0;animation:fade .8s 3.6s forwards}"
+    "@keyframes fade{to{opacity:1}}"
+    ".caret{animation:blink 1.1s steps(1) infinite}"
+    "@keyframes blink{50%{opacity:0}}"
+    ".pulse{animation:pulse 2.4s ease-in-out infinite}"
+    "@keyframes pulse{50%{opacity:.25}}"
+    ".grow{transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0);animation:grow 1.4s cubic-bezier(.2,.8,.2,1) forwards}"
+    "@keyframes grow{to{transform:scaleY(1)}}"
+    "@media (prefers-reduced-motion:reduce){.w{stroke-dashoffset:0;animation:none}.fade{opacity:1;animation:none}"
+    ".caret,.pulse{animation:none}.grow{transform:none;animation:none}}"
+    "</style>"
+)
+
+
+def _ellipse_pts(cx, cy, rx, ry, rot_deg, n=72):
+    a = math.radians(rot_deg)
+    pts = []
+    for i in range(n + 1):
+        t = 2 * math.pi * i / n
+        x, y = rx * math.cos(t), ry * math.sin(t)
+        pts.append((cx + x * math.cos(a) - y * math.sin(a), cy + x * math.sin(a) + y * math.cos(a), t))
+    return pts
+
+
 def header() -> str:
     W, H = 1280, 460
     gdefs, guse = grain("gr")
+    gdefs = ANIM_CSS + gdefs
     b = [f'<rect width="{W}" height="{H}" fill="{BLUE}"/>']
-    # radiating light behind the sphere
     cx, cy, r = 1000, 236, 128
     px = round(W * 0.56)
     gdefs += f'<clipPath id="panel"><rect x="{px}" y="67" width="{W - 44 - px}" height="{H - 64 - 67}"/></clipPath>'
-    b.append('<g clip-path="url(#panel)">')
+    gdefs += f'<clipPath id="ball"><circle cx="{cx}" cy="{cy}" r="{r}"/></clipPath>'
+    # slowly turning light behind the sphere
+    b.append('<g clip-path="url(#panel)"><g>')
     b.append(rays(cx, cy, r + 14, 900, 120, 0.7, INK, 0.22))
     b.append(rays(cx, cy, r + 14, r + 46, 240, 0.9, INK, 0.7))
+    b.append(f'<animateTransform attributeName="transform" type="rotate" from="0 {cx} {cy}" to="360 {cx} {cy}" dur="240s" repeatCount="indefinite"/></g>')
     b.append(f'<circle cx="{cx}" cy="{cy}" r="{r + 6}" fill="{BLUE}"/>')
-    # orbits
-    b.append(f'<ellipse cx="{cx}" cy="{cy}" rx="{r + 92}" ry="{(r + 92) * 0.3}" transform="rotate(-18 {cx} {cy})" fill="none" stroke="{INK}" stroke-width="1" opacity="0.85"/>')
-    b.append(f'<circle cx="{cx}" cy="{cy}" r="{r + 64}" fill="none" stroke="{INK}" stroke-width="0.8" stroke-dasharray="2 5" opacity="0.8"/>')
+    orbit = _ellipse_pts(cx, cy, r + 92, (r + 92) * 0.3, -18)
+    od = "M" + "L".join(f"{x:.1f} {y:.1f}" for x, y, _ in orbit) + "Z"
+    b.append(f'<path d="{od}" fill="none" stroke="{INK}" stroke-width="1" opacity="0.85"/>')
+    b.append(f'<circle cx="{cx}" cy="{cy}" r="{r + 64}" fill="none" stroke="{INK}" stroke-width="0.8" stroke-dasharray="2 5" opacity="0.8">'
+             f'<animateTransform attributeName="transform" type="rotate" from="0 {cx} {cy}" to="-360 {cx} {cy}" dur="90s" repeatCount="indefinite"/></circle>')
     b.append('</g>')
     b.append(f'<path d="M{px} 66V{H - 64}" stroke="{INK}" stroke-width="1" opacity="0.55"/>')
     b.append(engraved_sphere(cx, cy, r))
     b.append(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{INK}" stroke-width="1.4"/>')
-    # meridians
-    for k in (0.35, 0.7):
-        b.append(f'<ellipse cx="{cx}" cy="{cy}" rx="{r * k}" ry="{r}" fill="none" stroke="{INK}" stroke-width="0.6" opacity="0.55"/>')
-    # front half of the orbit + satellite
-    a = math.radians(-18)
-    ox, oy = (r + 92), (r + 92) * 0.3
-    t = math.radians(150)
-    sx = cx + ox * math.cos(t) * math.cos(a) - oy * math.sin(t) * math.sin(a)
-    sy = cy + ox * math.cos(t) * math.sin(a) + oy * math.sin(t) * math.cos(a)
-    b.append(f'<circle cx="{sx:.1f}" cy="{sy:.1f}" r="7" fill="{BLUE}" stroke="{INK}" stroke-width="1.6"/>')
-    b.append(f'<circle cx="{sx:.1f}" cy="{sy:.1f}" r="2.2" fill="{INK}"/>')
-    lbl, _ = text("TOKEN", sx - 60, sy + 16, 7, 4.2, 2.2, 1)
-    b.append(lbl)
-    b.append(f'<path d="M{sx - 10:.1f} {sy + 8:.1f}L{sx - 24:.1f} {sy + 18:.1f}" stroke="{INK}" stroke-width="0.8"/>')
-    # figure caption
+    # spinning meridians: rx = r*|sin(theta + phase)|
+    n = 24
+    for k in range(4):
+        ph = math.pi * k / 4
+        vals = ";".join(f"{r * abs(math.sin(math.pi * i / n + ph)):.1f}" for i in range(n + 1))
+        b.append(f'<ellipse cx="{cx}" cy="{cy}" rx="{r * abs(math.sin(ph)):.1f}" ry="{r}" fill="none" stroke="{INK}" stroke-width="0.7" opacity="0.6">'
+                 f'<animate attributeName="rx" values="{vals}" dur="18s" repeatCount="indefinite"/></ellipse>')
+    # light sweep across the sphere
+    b.append(f'<g clip-path="url(#ball)"><rect x="{cx - r}" y="{cy - r}" width="{2 * r}" height="1.4" fill="{INK}" opacity="0.7">'
+             f'<animate attributeName="y" values="{cy - r};{cy + r}" dur="6s" repeatCount="indefinite"/>'
+             f'<animate attributeName="opacity" values="0;0.8;0.8;0" keyTimes="0;0.1;0.9;1" dur="6s" repeatCount="indefinite"/></rect></g>')
+    # orbiting token (hidden while behind the sphere)
+    ops = []
+    for x, y, t in orbit:
+        behind = math.sin(t) < 0 and math.hypot(x - cx, y - cy) < r + 4
+        ops.append("0" if behind else "1")
+    lbl, _ = text("TOKEN", 12, 10, 6, 3.8, 2, 1)
+    b.append(f'<g><circle r="7" fill="{BLUE}" stroke="{INK}" stroke-width="1.6"/><circle r="2.2" fill="{INK}"/>'
+             f'<path d="M6 6L11 10" stroke="{INK}" stroke-width="0.8"/>{lbl}'
+             f'<animateMotion dur="16s" repeatCount="indefinite" path="{od}"/>'
+             f'<animate attributeName="opacity" values="{";".join(ops)}" dur="16s" repeatCount="indefinite"/></g>')
     cap, _ = text("FIG. 01 — LOCAL FIRST", cx, cy + r + 104, 8, 5, 2.6, 1.1, INK, "middle")
     b.append(cap)
 
-    # top rule & labels
     b.append(frame(W, H))
     s, _ = text("CEMIL CAN ÖZ", 44, 42, 10, 6.4, 3.4, 1.4); b.append(s)
     s, _ = text("COMPUTER ENGINEERING · TR / EN", 44 + 160, 42, 10, 6.4, 3.4, 1.1, INK_DIM); b.append(s)
-    s, _ = text("PROFILE / 2026.11", W - 44, 42, 10, 6.4, 3.4, 1.1, INK, "end"); b.append(s)
+    lw = text_width("LIVE / 2026.11", 6.4, 3.4)
+    b.append(f'<rect class="pulse" x="{W - 44 - lw - 18:.1f}" y="43" width="8" height="8" fill="{INK}"/>')
+    s, _ = text("LIVE / 2026.11", W - 44, 42, 10, 6.4, 3.4, 1.1, INK, "end"); b.append(s)
     b.append(f'<path d="M44 66H{W - 44}" stroke="{INK}" stroke-width="1" opacity="0.55"/>')
 
-    # big thin condensed headline
+    # headline that writes itself
     y0, hh, gw, tr, sw = 88, 84, 47, 14, 2.6
+    end_x = 0
     for i, line in enumerate(["BUILD", "USEFUL", "THINGS."]):
-        s, _ = text(line, 50, y0 + i * (hh + 20), hh, gw, tr, sw)
+        s, adv = text(line, 50, y0 + i * (hh + 20), hh, gw, tr, sw)
+        s = s.replace('<path d=', f'<path class="w w{i + 1}" pathLength="1" d=', 1).replace('<g fill=', '<g class="fade" fill=')
         b.append(s)
-    # index numbers beside lines
-    for i, n in enumerate(["01", "02", "03"]):
-        s, _ = text(n, 30, y0 + i * (hh + 20) + 2, 8, 5, 2, 1, INK_DIM, "middle")
+        end_x = 50 + adv
+    b.append(f'<rect class="caret" x="{end_x + 16:.1f}" y="{y0 + 2 * (hh + 20) + hh - 6}" width="22" height="6" fill="{INK}"/>')
+    for i, nn in enumerate(["01", "02", "03"]):
+        s, _ = text(nn, 30, y0 + i * (hh + 20) + 2, 8, 5, 2, 1, INK_DIM, "middle")
         b.append(s)
-    # bottom rule & stack
     b.append(f'<path d="M44 {H - 64}H{W - 44}" stroke="{INK}" stroke-width="1" opacity="0.55"/>')
     s, _ = text("C# · .NET · WPF · SQLITE · PYTHON · JAVASCRIPT · KOTLIN", 44, H - 48, 10, 6.4, 3.4, 1.2); b.append(s)
     s, _ = text("LOCAL TOOLS FOR AI-ASSISTED WORK →", W - 44, H - 48, 10, 6.4, 3.4, 1.2, INK, "end"); b.append(s)
     b.append(guse)
     return svg(W, H, "Cemil Can Öz — Build useful things.",
-               "Electric blue poster: tall thin cream headline 'Build useful things.' beside an engraved, hatched sphere with radiating lines and an orbiting token.",
+               "Animated electric blue poster: the tall thin headline 'Build useful things.' writes itself beside an engraved sphere that spins, with turning rays and an orbiting token.",
+               "".join(b), gdefs)
+
+
+# --------------------------------------------------------------------------
+# Live data card (refreshed daily by GitHub Actions)
+# --------------------------------------------------------------------------
+def live_card(d: dict) -> str:
+    W, H = 1280, 330
+    gdefs, guse = grain("gl", 0.1)
+    gdefs = ANIM_CSS + gdefs
+    b = [f'<rect width="{W}" height="{H}" fill="{BLUE}"/>', frame(W, H, 12, 1)]
+    b.append(f'<rect class="pulse" x="36" y="35" width="8" height="8" fill="{INK}"/>')
+    s, _ = text(f"LIVE · UPDATED {d['updated']} · GITHUB ACTIONS", 54, 34, 9, 5.8, 3, 1.3); b.append(s)
+    s, _ = text("FIG. 02 — WHAT I SHIPPED LATELY", W - 36, 34, 9, 5.8, 3, 1.1, INK, "end"); b.append(s)
+    b.append(f'<path d="M34 58H{W - 34}" stroke="{INK}" stroke-width="0.9" opacity="0.55"/>')
+    rel = str(d.get("release") or "-").upper()
+    metrics = [
+        (f"{d['open_prs']:02d}", "PRS IN REVIEW", "UPSTREAM"),
+        (f"{d['merged_prs']:02d}", "PRS MERGED", "ALL REPOS"),
+        (f"{d['public_repos']:02d}", "PUBLIC REPOS", "GITHUB"),
+        (rel, "CODEX HISTORY", "LATEST RELEASE"),
+    ]
+    colw = 170
+    for i, (val, l1, l2) in enumerate(metrics):
+        x = 40 + i * colw
+        if i:
+            b.append(f'<path d="M{x - 18} 86V{H - 64}" stroke="{INK}" stroke-width="0.8" opacity="0.4"/>')
+        s, _ = text(val, x, 100, 70, 26, 9, 2.2)
+        b.append(s.replace('<path d=', '<path class="w" pathLength="1" d=', 1).replace('<g fill=', '<g class="fade" fill='))
+        s, _ = text(l1, x, 196, 8.5, 5.4, 2.8, 1.2); b.append(s)
+        s, _ = text(l2, x, 214, 8, 5, 2.8, 1, INK_DIM); b.append(s)
+    weeks = d.get("weeks") or []
+    bx0, bx1, base, top = 740, W - 40, H - 80, 100
+    if weeks:
+        mx = max(weeks) or 1
+        bw = (bx1 - bx0) / len(weeks)
+        for i, v in enumerate(weeks):
+            h = max(2.0, (base - top) * v / mx)
+            x = bx0 + i * bw
+            hatch = "".join(f"M{x + k:.1f} {base - h:.1f}V{base}" for k in (1.5, 4, 6.5, 9, 11.5) if k < bw - 3)
+            b.append(f'<path class="grow" style="animation-delay:{0.4 + i * 0.03:.2f}s" d="{hatch}" stroke="{INK}" stroke-width="1.3"/>')
+        b.append(f'<path d="M{bx0} {base + 0.5}H{bx1}" stroke="{INK}" stroke-width="1.2"/>')
+        s, _ = text(f"CONTRIBUTIONS · LAST {len(weeks)} WEEKS", bx0, 80, 8.5, 5.4, 2.8, 1.2); b.append(s)
+        s, _ = text(f"{d.get('total', sum(weeks))} IN THE LAST YEAR", bx1, 80, 8.5, 5.4, 2.8, 1.2, INK, "end"); b.append(s)
+        s, _ = text(f"{len(weeks)} WEEKS AGO", bx0, base + 10, 7.5, 4.8, 2.6, 1, INK_DIM); b.append(s)
+        s, _ = text("NOW", bx1, base + 10, 7.5, 4.8, 2.6, 1, INK_DIM, "end"); b.append(s)
+    b.append(f'<path d="M34 {H - 50}H{W - 34}" stroke="{INK}" stroke-width="0.9" opacity="0.55"/>')
+    s, _ = text(f"LAST PUSH · {d.get('last_push', '-')}", 36, H - 35, 8.5, 5.4, 2.8, 1.2); b.append(s)
+    s, _ = text("REFRESHED DAILY · SCRIPTS/LIVE_DATA.PY", W - 36, H - 35, 8.5, 5.4, 2.8, 1.1, INK_DIM, "end"); b.append(s)
+    b.append(guse)
+    return svg(W, H, "Live GitHub stats",
+               f"Live stats updated {d['updated']}: {d['open_prs']} pull requests in review, {d['merged_prs']} merged, "
+               f"{d['public_repos']} public repositories, latest Codex History release {d.get('release') or 'none'}, and weekly contributions as engraved bars.",
                "".join(b), gdefs)
 
 
@@ -466,6 +562,10 @@ def main() -> None:
         "TokenBar", "Project card: TokenBar, a Windows tray app that shows local AI coding agents' token usage."),
         encoding="utf-8")
     (OUT / "footer.svg").write_text(footer(), encoding="utf-8")
+    live = OUT.parent / "data" / "live.json"
+    if live.exists():
+        import json
+        (OUT / "live.svg").write_text(live_card(json.loads(live.read_text(encoding="utf-8"))), encoding="utf-8")
     for p in sorted(OUT.glob("*.svg")):
         print(f"{p.name:28} {p.stat().st_size / 1024:6.1f} KB")
 
