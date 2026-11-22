@@ -1,12 +1,11 @@
 {
-  "updated": "2026-11-21",
+  "updated": "2026-11-22",
   "open_prs": 10,
   "merged_prs": 10,
-  "public_repos": 29,
+  "public_repos": 31,
   "release": "v0.1.1",
-  "last_push": "hermes-agent \u00b7 2026-11-17",
+  "last_push": "videolu-siteler-ornekler \u00b7 2026-11-21",
   "weeks": [
-    0,
     0,
     0,
     0,
@@ -31,7 +30,8 @@
     5,
     2,
     26,
-    8
+    14,
+    1
   ],
-  "total": 195
+  "total": 202
 }
