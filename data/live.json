@@ -1,10 +1,10 @@
 {
-  "updated": "2026-11-24",
+  "updated": "2026-11-25",
   "open_prs": 10,
   "merged_prs": 10,
   "public_repos": 31,
   "release": "v0.1.1",
-  "last_push": "videolu-siteler-ornekler \u00b7 2026-11-21",
+  "last_push": "prometheus-sunum \u00b7 2026-11-25",
   "weeks": [
     0,
     0,
@@ -31,7 +31,7 @@
     2,
     26,
     14,
-    1
+    2
   ],
-  "total": 202
+  "total": 203
 }
